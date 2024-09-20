@@ -78,21 +78,25 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponse<Object> loginUser(AuthRequest authRequest) {
         validationUtil.validate(authRequest);
-          Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                authRequest.getEmail(), authRequest.getPassword()
-        ));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        AppUser appUser = (AppUser) authenticate.getPrincipal();
-        String token =jwtUtil.generateToken(appUser);
-        AuthResponse response=AuthResponse.builder()
-                .email(appUser.getEmail())
-                .roles(appUser.getRoles().stream().map(Role::getRole).toList())
-                .build();
-        return (LoginResponse<Object>) LoginResponse.builder()
-                .message("success login")
-                .data(response)
-                .token(token)
-                .build();
+        try {
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    authRequest.getEmail(), authRequest.getPassword()
+            ));
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+            AppUser appUser = (AppUser) authenticate.getPrincipal();
+            String token = jwtUtil.generateToken(appUser);
+            AuthResponse response = AuthResponse.builder()
+                    .email(appUser.getEmail())
+                    .roles(appUser.getRoles().stream().map(Role::getRole).toList())
+                    .build();
+            return (LoginResponse<Object>) LoginResponse.builder()
+                    .message("success login")
+                    .data(response)
+                    .token(token)
+                    .build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
     }
 
 }

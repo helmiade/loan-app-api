@@ -45,6 +45,7 @@ public class InstalmentTypeController {
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public CommonResponse<?> update(@RequestBody InstalmentType instalmentType) {
         InstalmentType instalmentType1=instalmentTypeService.update(instalmentType);
         return  CommonResponse.builder()

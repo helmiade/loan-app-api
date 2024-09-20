@@ -2,10 +2,7 @@ package com.enigmacamp.livecode_loan_app.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,13 +21,14 @@ public class AppUser implements UserDetails {
     private String id;
     private String email;
     private String password;
+    @Getter
     private List<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().name())) // Assuming `Role` is an enum or has a name method
-                .collect(Collectors.toList());    }
+                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
+                .collect(Collectors.toList());  }
 
     @Override
     public String getUsername() {
