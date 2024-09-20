@@ -7,10 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -25,12 +28,18 @@ public class AppUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().name())) // Assuming `Role` is an enum or has a name method
+                .collect(Collectors.toList());    }
 
     @Override
     public String getUsername() {
-        return "";
+        return this.email;
+    }
+
+    @Override
+    public String getPassword(){
+        return this.password;
     }
 
     @Override

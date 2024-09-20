@@ -25,7 +25,7 @@ public class User {
     @Column
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST)
-    private List<UserRole> roles;
+    @ManyToMany
+    private List<Role> roles;
 
 }
