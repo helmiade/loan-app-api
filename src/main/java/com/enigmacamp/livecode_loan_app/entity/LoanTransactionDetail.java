@@ -28,7 +28,7 @@ public class LoanTransactionDetail {
     @JoinColumn(name = "order_id")
     private LoanTransaction loanTransaction;
     @Column(name = "loan_status")
-    private LoanStatus loanStatus; // enum
+    private LoanStatus loanStatus=LoanStatus.UNPAID; // enum
     @Column(name = "created_at")
     private Long createdAt;
     @Column(name = "update_at")
