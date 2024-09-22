@@ -1,5 +1,6 @@
 package com.enigmacamp.livecode_loan_app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +32,7 @@ public class Customer {
     private String status;
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
     private User user;

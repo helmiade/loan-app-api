@@ -1,5 +1,6 @@
 package com.enigmacamp.livecode_loan_app.entity;
 
+import com.enigmacamp.livecode_loan_app.constant.ERole;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,14 +22,14 @@ public class AppUser implements UserDetails {
     private String id;
     private String email;
     private String password;
-    @Getter
-    private List<Role> roles;
+    private List<ERole> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
-                .collect(Collectors.toList());  }
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        roles.forEach(eRole -> authorities.add(new SimpleGrantedAuthority(eRole.name())));
+        return authorities;
+    }
 
     @Override
     public String getUsername() {

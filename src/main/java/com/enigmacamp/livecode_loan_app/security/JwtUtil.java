@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.enigmacamp.livecode_loan_app.entity.AppUser;
+import com.enigmacamp.livecode_loan_app.entity.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,7 @@ public class JwtUtil {
                     .withIssuer(appName)
                     .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSec))
                     .withIssuedAt(Instant.now())
-                    .withClaim("roles",appUser.getRoles().stream().toList())
+                    .withClaim("roles",appUser.getRoles().stream().map(eRole -> eRole.name()).toList())
                     .sign(algorithm);
         }catch (JWTCreationException exception){
             log.error("error while generating token: {}", exception.getMessage());

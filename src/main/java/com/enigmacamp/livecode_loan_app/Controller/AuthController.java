@@ -2,6 +2,7 @@ package com.enigmacamp.livecode_loan_app.Controller;
 
 import com.enigmacamp.livecode_loan_app.Service.AuthService;
 import com.enigmacamp.livecode_loan_app.dto.Request.AuthRequest;
+import com.enigmacamp.livecode_loan_app.dto.Request.RegisterCustomerRequest;
 import com.enigmacamp.livecode_loan_app.dto.Response.CommonResponse;
 import com.enigmacamp.livecode_loan_app.dto.Response.LoginResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,14 @@ public class AuthController {
         return authService.loginUser(authRequest);
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/signup/admin")
     public CommonResponse<Object> register(@RequestBody AuthRequest authRequest) {
         return authService.registerUser(authRequest);
+    }
+
+    @PostMapping("/signup/customer")
+    public CommonResponse<Object> registerCustomer(@RequestBody RegisterCustomerRequest request) {
+        return authService.registerCustomer(request);
     }
 
 }

@@ -33,6 +33,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             // validasi token jwt
             String headerAuth = request.getHeader("Authorization");
+            log.info("Authorization Header: {}", headerAuth);
             String token = null;
             if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
                 token = headerAuth.substring(7);
@@ -40,9 +41,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
             if (token != null && jwtUtil.verifyToken(token)) {
                 // set authentication ke spring security
+                log.info("Token received: {}", token);
                 Map<String, String> userInfo = jwtUtil.getUserInfoByToken(token);
+                log.info("User info from token: {}", userInfo);
 
-                UserDetails user = userService.loadUserByUserId(userInfo.get("userId"));
+                UserDetails user = userService.loadUserByUsername(userInfo.get("userId"));
+                log.info("User found: {}", user);
                 // validasi/authentication by token
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         user,

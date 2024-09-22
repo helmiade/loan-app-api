@@ -50,6 +50,6 @@ public class InstalmentTypeServiceImpl implements InstalmentTypeService {
 
     private InstalmentType findByIdOrThrowError(String id) {
         Optional<InstalmentType> instalmentType= instalmentTypeRepository.findById(id);
-        return instalmentType.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"customer not found"));
+        return instalmentType.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"instalment type not found"));
     }
 }

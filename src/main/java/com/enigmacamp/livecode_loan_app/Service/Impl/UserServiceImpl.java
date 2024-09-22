@@ -4,11 +4,14 @@ import com.enigmacamp.livecode_loan_app.Mapper.AppUserMapper;
 import com.enigmacamp.livecode_loan_app.Repository.UserRepository;
 import com.enigmacamp.livecode_loan_app.Service.UserService;
 import com.enigmacamp.livecode_loan_app.entity.AppUser;
+import com.enigmacamp.livecode_loan_app.entity.Role;
 import com.enigmacamp.livecode_loan_app.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        return new AppUser(user.getId(), user.getEmail(), user.getPassword(), user.getRoles());
+
+        return AppUserMapper.mapToAppUser(user);
     }
 }

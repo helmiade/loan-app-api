@@ -20,5 +20,6 @@ public class Role {
     private String id;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private ERole role;
 }

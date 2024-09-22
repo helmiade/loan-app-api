@@ -8,9 +8,9 @@ import java.util.List;
 
 @Service
 public interface InstalmentTypeService {
-    public List<InstalmentType> findAll();
-    public InstalmentType findById(String id);
-    public InstalmentType create(InstalmentTypeRequest instalmentTypeRequest);
-    public InstalmentType update(InstalmentType instalmentType);
-    public void delete(String id);
+    List<InstalmentType> findAll();
+    InstalmentType findById(String id);
+    InstalmentType create(InstalmentTypeRequest instalmentTypeRequest);
+    InstalmentType update(InstalmentType instalmentType);
+    void delete(String id);
 }

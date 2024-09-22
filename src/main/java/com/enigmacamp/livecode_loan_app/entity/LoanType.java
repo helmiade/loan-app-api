@@ -19,5 +19,5 @@ public class LoanType {
     @Column
     private String type;
     @Column(name = "max_loan")
-    private Double maxLoan;
+    private Long maxLoan;
 }
