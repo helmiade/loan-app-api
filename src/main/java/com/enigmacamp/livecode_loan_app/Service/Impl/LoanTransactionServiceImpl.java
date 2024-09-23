@@ -3,6 +3,7 @@ package com.enigmacamp.livecode_loan_app.Service.Impl;
 import com.enigmacamp.livecode_loan_app.Repository.LoanTransactionRepository;
 import com.enigmacamp.livecode_loan_app.Service.LoanTransactionDetailService;
 import com.enigmacamp.livecode_loan_app.Service.LoanTransactionService;
+import com.enigmacamp.livecode_loan_app.Service.LoanTypeService;
 import com.enigmacamp.livecode_loan_app.Service.UserService;
 import com.enigmacamp.livecode_loan_app.constant.ApprovalStatus;
 import com.enigmacamp.livecode_loan_app.dto.Request.ApproveTransactionRequest;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LoanTransactionServiceImpl implements LoanTransactionService {
     private final LoanTransactionRepository loanTransactionRepository;
+    private final LoanTypeService loanTypeService;
     private final LoanTransactionDetailService loanTransactionDetailService;
     private final UserService userService;
     @Override
@@ -34,6 +36,10 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
 
     @Override
     public LoanTransaction createLoanTransaction(LoanTransactionRequest loanTransactionRequest) {
+        LoanType loanType = loanTypeService.findById(loanTransactionRequest.getLoanTypes().getId());
+        if(loanTransactionRequest.getNominal()>loanType.getMaxLoan()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Nominal loan type cannot be greater than "+loanType.getMaxLoan());
+        }
         LoanTransaction loanTransaction = LoanTransaction.builder()
                 .loanType(loanTransactionRequest.getLoanTypes())
                 .instalmentType(loanTransactionRequest.getInstalmentTypes())
@@ -42,6 +48,7 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
                 .createdAt(System.currentTimeMillis())
                 .build();
         return loanTransactionRepository.save(loanTransaction);
+
     }
 
     @Override
@@ -52,6 +59,9 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
     @Override
     public LoanTransaction approveLoanTransaction(String id, ApproveTransactionRequest request) {
         LoanTransaction loanTransaction = findByIdOrThrowError(request.getLoanTransactionId());
+        if(loanTransaction.getApprovalStatus().equals(ApprovalStatus.APPROVED)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"this transaction already approved by admin");
+        }
         AppUser appUser= userService.loadUserByUserId(id);
         String adminEmail= SecurityContextHolder.getContext().getAuthentication().getName();
         loanTransaction.setApprovedBy(appUser.getEmail());
@@ -65,6 +75,14 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
         loanTransaction.setLoanTransactionDetails(loanTransactionDetail);
 
         return loanTransactionRepository.save(loanTransaction);
+    }
+
+    @Override
+    public LoanTransaction updateTransactionDetail(String id) {
+        LoanTransaction loanTransaction = findByIdOrThrowError(id);
+        List<LoanTransactionDetail> loanTransactionDetails= loanTransaction.getLoanTransactionDetails();
+        loanTransactionDetailService.update(loanTransactionDetails);
+        return loanTransaction;
     }
 
     private LoanTransaction findByIdOrThrowError(String id) {

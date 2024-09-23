@@ -11,6 +11,7 @@ import com.enigmacamp.livecode_loan_app.entity.LoanTransactionDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,5 +64,16 @@ public class LoanTransactionDetailServiceImpl implements LoanTransactionDetailSe
         return loanTransactionDetails;
     }
 
-
+    @Override
+    public void update(List<LoanTransactionDetail> loanTransactionDetail) {
+        List<LoanTransactionDetail> loanTransactionDetails = loanTransactionDetailRepository.findByLoanStatus(LoanStatus.UNPAID);
+        if(loanTransactionDetails.isEmpty()){
+            return;
+        }
+        LoanTransactionDetail loanTransactionDetailToUpdate = loanTransactionDetails.get(0);
+        loanTransactionDetailToUpdate.setLoanStatus(LoanStatus.PAID);
+        loanTransactionDetailToUpdate.setTransactionDate(System.currentTimeMillis());
+        loanTransactionDetailToUpdate.setUpdatedAt(System.currentTimeMillis());
+        loanTransactionDetailRepository.saveAndFlush(loanTransactionDetailToUpdate);
+    }
 }

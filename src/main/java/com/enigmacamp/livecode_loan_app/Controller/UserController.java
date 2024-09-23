@@ -27,7 +27,6 @@ public class UserController {
         return CommonResponse.builder()
                 .message("success")
                 .data(authResponse)
-                .statusCode(HttpStatus.OK.value())
                 .build();
 
     }

@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface LoanTransactionDetailService {
     List<LoanTransactionDetail> create(LoanTransaction loanTransaction, ApproveTransactionRequest request);
+    void update(List<LoanTransactionDetail> loanTransactionDetail);
 }
