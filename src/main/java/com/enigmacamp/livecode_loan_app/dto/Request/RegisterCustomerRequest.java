@@ -1,6 +1,7 @@
 package com.enigmacamp.livecode_loan_app.dto.Request;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,9 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class RegisterCustomerRequest {
+    @NotBlank
     private String email;
+    @NotBlank
     private String password;
     private String firstName;
     private String lastName;
