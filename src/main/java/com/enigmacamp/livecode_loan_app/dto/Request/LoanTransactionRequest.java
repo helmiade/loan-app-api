@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,5 +21,6 @@ public class LoanTransactionRequest {
     private InstalmentType instalmentTypes;
     private Customer customers;
     private double nominal;
+    private MultipartFile document;
 }
 

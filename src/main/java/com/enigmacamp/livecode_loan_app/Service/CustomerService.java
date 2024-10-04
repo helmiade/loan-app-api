@@ -14,4 +14,5 @@ public interface CustomerService {
     void deleteById(String id);
     CustomerResponse update(CustomerRequest request);
     CustomerResponse create(Customer customer);
+    Customer findById(String id);
 }

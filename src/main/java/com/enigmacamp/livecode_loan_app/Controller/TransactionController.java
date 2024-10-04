@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,7 +31,11 @@ public class TransactionController {
 
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
-    public CommonResponse<?> create(@RequestBody LoanTransactionRequest request) {
+    public CommonResponse<?> create(@RequestPart("request") LoanTransactionRequest request,
+                                    @RequestPart(value = "document", required = false) MultipartFile file) {
+        if(file != null && !file.isEmpty()) {
+            request.setDocument(file);
+        }
         LoanTransaction transaction = loanTransactionService.createLoanTransaction(request);
         LoanTransactionResponse response= LoanTransactionResponse.builder()
                 .id(transaction.getId())

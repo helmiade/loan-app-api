@@ -35,4 +35,10 @@ public class LoanTransactionDetail {
     private Long createdAt;
     @Column(name = "update_at")
     private Long updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "guarantee_picture_id")
+    private GuaranteePicture guaranteePicture;
+
+
 }

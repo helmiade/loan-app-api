@@ -1,6 +1,7 @@
 package com.enigmacamp.livecode_loan_app.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,5 +37,9 @@ public class Customer {
     @JoinColumn(name = "user_id")
     @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "customer_picture_id")
+    private CustomerPicture customerPicture;
 
 }
