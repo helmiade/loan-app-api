@@ -1,5 +1,6 @@
 package com.enigmacamp.livecode_loan_app.Service.Impl;
 
+import com.enigmacamp.livecode_loan_app.Mapper.LoanTransactionMapper;
 import com.enigmacamp.livecode_loan_app.Repository.LoanTransactionRepository;
 import com.enigmacamp.livecode_loan_app.Service.*;
 import com.enigmacamp.livecode_loan_app.constant.ApprovalStatus;
@@ -38,14 +39,7 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
         if(loanTransactionRequest.getNominal()>loanType.getMaxLoan()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Nominal loan type cannot be greater than "+loanType.getMaxLoan());
         }
-        LoanTransaction loanTransaction = LoanTransaction.builder()
-                .loanType(loanTransactionRequest.getLoanTypes())
-                .instalmentType(loanTransactionRequest.getInstalmentTypes())
-                .customer(loanTransactionRequest.getCustomers())
-                .nominal(loanTransactionRequest.getNominal())
-                .approvalStatus(ApprovalStatus.PENDING)
-                .createdAt(System.currentTimeMillis())
-                .build();
+        LoanTransaction loanTransaction = LoanTransactionMapper.mapToLoanTransaction(loanTransactionRequest);
 
         if(loanTransactionRequest.getDocument()!=null && !loanTransactionRequest.getDocument().isEmpty()){
             loanTransactionDocumentService.createFile(loanTransactionRequest);
