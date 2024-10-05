@@ -53,6 +53,16 @@ public class TransactionController {
                 .data(response)
                 .build();
     }
+    @PutMapping("/{adminId}/reject")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CommonResponse<?> reject(@PathVariable String adminId, @RequestBody ApproveTransactionRequest request) {
+        LoanTransaction transaction = loanTransactionService.rejectLoanTransaction(adminId, request);
+        LoanTransactionResponse response= LoanTransactionMapper.mapToLoanTransactionResponse(transaction);
+        return CommonResponse.builder()
+                .message("success reject transaction")
+                .data(response)
+                .build();
+    }
     @GetMapping("/{id}")
     public CommonResponse<?> findById(@PathVariable String id) {
         LoanTransaction transaction = loanTransactionService.findById(id);
