@@ -1,5 +1,6 @@
 package com.enigmacamp.livecode_loan_app.Controller;
 
+import com.enigmacamp.livecode_loan_app.Mapper.LoanTransactionMapper;
 import com.enigmacamp.livecode_loan_app.Service.LoanTransactionService;
 import com.enigmacamp.livecode_loan_app.dto.Request.ApproveTransactionRequest;
 import com.enigmacamp.livecode_loan_app.dto.Request.LoanTransactionRequest;
@@ -7,11 +8,9 @@ import com.enigmacamp.livecode_loan_app.dto.Response.CommonResponse;
 import com.enigmacamp.livecode_loan_app.dto.Response.LoanTransactionResponse;
 import com.enigmacamp.livecode_loan_app.entity.LoanTransaction;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 @RestController
@@ -37,19 +36,7 @@ public class TransactionController {
             request.setDocument(file);
         }
         LoanTransaction transaction = loanTransactionService.createLoanTransaction(request);
-        LoanTransactionResponse response= LoanTransactionResponse.builder()
-                .id(transaction.getId())
-                .loanTypesId(transaction.getLoanType().getId())
-                .instalmentTypesId(transaction.getInstalmentType().getId())
-                .customerId(transaction.getCustomer().getId())
-                .nominal(transaction.getNominal())
-                .createdAt(transaction.getCreatedAt())
-                .updatedAt(transaction.getUpdatedAt())
-                .approvalStatus(transaction.getApprovalStatus())
-                .approvedAt(transaction.getApprovedAt())
-                .approvedBy(transaction.getApprovedBy())
-                .loanTransactionDetails(transaction.getLoanTransactionDetails())
-                .build();
+        LoanTransactionResponse response= LoanTransactionMapper.mapToLoanTransactionResponse(transaction);
         return CommonResponse.builder()
                 .message("success create transaction")
                 .data(response)
@@ -60,19 +47,7 @@ public class TransactionController {
     @PreAuthorize("hasRole('ADMIN')")
     public CommonResponse<?> approve(@PathVariable String adminId, @RequestBody ApproveTransactionRequest request) {
         LoanTransaction transaction = loanTransactionService.approveLoanTransaction(adminId, request);
-        LoanTransactionResponse response= LoanTransactionResponse.builder()
-                .id(transaction.getId())
-                .loanTypesId(transaction.getLoanType().getId())
-                .instalmentTypesId(transaction.getInstalmentType().getId())
-                .customerId(transaction.getCustomer().getId())
-                .nominal(transaction.getNominal())
-                .createdAt(transaction.getCreatedAt())
-                .updatedAt(transaction.getUpdatedAt())
-                .approvalStatus(transaction.getApprovalStatus())
-                .approvedAt(transaction.getApprovedAt())
-                .approvedBy(transaction.getApprovedBy())
-                .loanTransactionDetails(transaction.getLoanTransactionDetails())
-                .build();
+        LoanTransactionResponse response= LoanTransactionMapper.mapToLoanTransactionResponse(transaction);
         return CommonResponse.builder()
                 .message("success approve transaction")
                 .data(response)
@@ -81,19 +56,7 @@ public class TransactionController {
     @GetMapping("/{id}")
     public CommonResponse<?> findById(@PathVariable String id) {
         LoanTransaction transaction = loanTransactionService.findById(id);
-        LoanTransactionResponse response= LoanTransactionResponse.builder()
-                .id(transaction.getId())
-                .loanTypesId(transaction.getLoanType().getId())
-                .instalmentTypesId(transaction.getInstalmentType().getId())
-                .customerId(transaction.getCustomer().getId())
-                .nominal(transaction.getNominal())
-                .createdAt(transaction.getCreatedAt())
-                .updatedAt(transaction.getUpdatedAt())
-                .approvalStatus(transaction.getApprovalStatus())
-                .approvedAt(transaction.getApprovedAt())
-                .approvedBy(transaction.getApprovedBy())
-                .loanTransactionDetails(transaction.getLoanTransactionDetails())
-                .build();
+        LoanTransactionResponse response= LoanTransactionMapper.mapToLoanTransactionResponse(transaction);
         return CommonResponse.builder()
                 .message("success find transaction")
                 .data(response)
@@ -103,19 +66,7 @@ public class TransactionController {
     @PutMapping("/{id}/pay")
     public CommonResponse<?> pay(@PathVariable String id) {
         LoanTransaction transaction= loanTransactionService.updateTransactionDetail(id);
-        LoanTransactionResponse response= LoanTransactionResponse.builder()
-                .id(transaction.getId())
-                .loanTypesId(transaction.getLoanType().getId())
-                .instalmentTypesId(transaction.getInstalmentType().getId())
-                .customerId(transaction.getCustomer().getId())
-                .nominal(transaction.getNominal())
-                .createdAt(transaction.getCreatedAt())
-                .updatedAt(transaction.getUpdatedAt())
-                .approvalStatus(transaction.getApprovalStatus())
-                .approvedAt(transaction.getApprovedAt())
-                .approvedBy(transaction.getApprovedBy())
-                .loanTransactionDetails(transaction.getLoanTransactionDetails())
-                .build();
+        LoanTransactionResponse response= LoanTransactionMapper.mapToLoanTransactionResponse(transaction);
         return CommonResponse.builder()
                 .message("success pay transaction")
                 .data(response)

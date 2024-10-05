@@ -3,13 +3,10 @@ package com.enigmacamp.livecode_loan_app.Service.Impl;
 import com.enigmacamp.livecode_loan_app.Repository.LoanTransactionDocumentRepository;
 import com.enigmacamp.livecode_loan_app.Service.LoanTransactionDocumentService;
 import com.enigmacamp.livecode_loan_app.dto.Request.LoanTransactionRequest;
-import com.enigmacamp.livecode_loan_app.entity.Customer;
-import com.enigmacamp.livecode_loan_app.entity.CustomerPicture;
 import com.enigmacamp.livecode_loan_app.entity.LoanTransactionDocument;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,12 +26,12 @@ public class LoanTransactionDocumentServiceImpl implements LoanTransactionDocume
     private final Path directoryPath= Paths.get("src/main/resources/asset/document");
 
     @Override
-    public LoanTransactionDocument createFile(LoanTransactionRequest loanTransactionRequest) {
+    public void createFile(LoanTransactionRequest loanTransactionRequest) {
 
         if(loanTransactionRequest.getDocument().isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "file not found");
         try {
             Files.createDirectories(directoryPath);
-            String fileName = String.format("%d %s", System.currentTimeMillis(), loanTransactionRequest.getDocument().getOriginalFilename());
+            String fileName = String.format("%d %s", System.currentTimeMillis(), loanTransactionRequest.getCustomers().getId());
             Path filePath=directoryPath.resolve(fileName);
             Files.copy(loanTransactionRequest.getDocument().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             LoanTransactionDocument document = LoanTransactionDocument.builder()
@@ -45,7 +42,7 @@ public class LoanTransactionDocumentServiceImpl implements LoanTransactionDocume
                     .customer(loanTransactionRequest.getCustomers())
                     .build();
 
-            return loanTransactionDocumentRepository.saveAndFlush(document);
+            loanTransactionDocumentRepository.saveAndFlush(document);
 
 
         } catch (IOException e){

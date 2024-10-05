@@ -1,10 +1,10 @@
 package com.enigmacamp.livecode_loan_app.Service.Impl;
 
+import com.enigmacamp.livecode_loan_app.Mapper.CustomerMapper;
 import com.enigmacamp.livecode_loan_app.Repository.CustomerRepository;
 import com.enigmacamp.livecode_loan_app.Service.CustomerPictureService;
 import com.enigmacamp.livecode_loan_app.Service.CustomerService;
 import com.enigmacamp.livecode_loan_app.dto.Request.CustomerRequest;
-import com.enigmacamp.livecode_loan_app.dto.Request.RegisterCustomerRequest;
 import com.enigmacamp.livecode_loan_app.dto.Response.CustomerResponse;
 import com.enigmacamp.livecode_loan_app.entity.Customer;
 import com.enigmacamp.livecode_loan_app.entity.CustomerPicture;
@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -55,15 +54,6 @@ public class CustomerServiceImpl implements CustomerService {
             }
             customerPicture = customerPictureService.createFile(request);
         }
-//        } else {
-//            if(findId.getCustomerPicture()!=null){
-//                CustomerPicture picture=findId.getCustomerPicture();
-//                findId.setCustomerPicture(null);
-//                customerRepository.saveAndFlush(findId);
-//                customerPictureService.deleteFile("src/main/resources/asset/images/"+picture.getFile_name(), picture);
-//            }
-//
-//        }
         Customer customer= Customer.builder()
                 .id(findId.getId())
                 .firstName(request.getFirstName())
@@ -75,29 +65,14 @@ public class CustomerServiceImpl implements CustomerService {
                 .customerPicture(customerPicture)
                 .build();
         customerRepository.saveAndFlush(customer);
-        return CustomerResponse.builder()
-                .id(customer.getId())
-                .firstName(customer.getFirstName())
-                .lastName(customer.getLastName())
-                .dateOfBirth(customer.getDateOfBirth())
-                .phone(customer.getPhone())
-                .status(customer.getStatus())
-                .build();
+        return CustomerMapper.mapToCustomer(customer);
     }
 
     @Override
     public CustomerResponse create(Customer customer) {
         try {
             customerRepository.saveAndFlush(customer);
-            return CustomerResponse.builder()
-                    .id(customer.getId())
-                    .firstName(customer.getFirstName())
-                    .lastName(customer.getLastName())
-                    .dateOfBirth(customer.getDateOfBirth())
-                    .phone(customer.getPhone())
-                    .status(customer.getStatus())
-                    .build();
-
+            return CustomerMapper.mapToCustomer(customer);
         } catch (DataIntegrityViolationException e){
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }

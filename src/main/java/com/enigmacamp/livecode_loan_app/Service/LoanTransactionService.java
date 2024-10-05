@@ -12,6 +12,7 @@ public interface LoanTransactionService {
     LoanTransaction createLoanTransaction(LoanTransactionRequest loanTransactionRequest);
     LoanTransaction findById(String id);
     LoanTransaction approveLoanTransaction(String id, ApproveTransactionRequest request);
+    LoanTransaction rejectLoanTransaction(String id, ApproveTransactionRequest request);
     LoanTransaction updateTransactionDetail(String id);
 
 }

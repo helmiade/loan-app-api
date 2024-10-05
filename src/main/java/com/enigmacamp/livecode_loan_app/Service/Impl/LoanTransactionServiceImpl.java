@@ -11,11 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +43,7 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
                 .instalmentType(loanTransactionRequest.getInstalmentTypes())
                 .customer(loanTransactionRequest.getCustomers())
                 .nominal(loanTransactionRequest.getNominal())
+                .approvalStatus(ApprovalStatus.PENDING)
                 .createdAt(System.currentTimeMillis())
                 .build();
 
@@ -63,16 +61,8 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
 
     @Override
     public LoanTransaction approveLoanTransaction(String id, ApproveTransactionRequest request) {
-        LoanTransaction loanTransaction = findByIdOrThrowError(request.getLoanTransactionId());
-        if(loanTransaction.getApprovalStatus() != null &&!loanTransaction.getApprovalStatus().toString().isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"this transaction already approved or rejected by admin");
-        }
-        AppUser appUser= userService.loadUserByUserId(id);
-        String adminEmail= SecurityContextHolder.getContext().getAuthentication().getName();
-        loanTransaction.setApprovedBy(appUser.getEmail());
-        loanTransaction.setApprovedAt(System.currentTimeMillis());
-        loanTransaction.setUpdatedAt(System.currentTimeMillis());
-        if(!loanTransactionDocumentService.findByCustomer(loanTransaction.getCustomer().getId()).getId().isEmpty()){
+        LoanTransaction loanTransaction=setLoanTransaction(id, request);
+        if(loanTransactionDocumentService.findByCustomer(loanTransaction.getCustomer().getId())!=null){
             loanTransaction.setApprovalStatus(ApprovalStatus.APPROVED);
             double nominal = loanTransaction.getNominal()+(loanTransaction.getNominal()*request.getInterestRate());
             request.setInterestRate(nominal);
@@ -82,10 +72,26 @@ public class LoanTransactionServiceImpl implements LoanTransactionService {
             loanTransaction.setApprovalStatus(ApprovalStatus.REJECTED);
         }
 
-
-
-
         return loanTransactionRepository.saveAndFlush(loanTransaction);
+    }
+
+    @Override
+    public LoanTransaction rejectLoanTransaction(String id, ApproveTransactionRequest request) {
+        LoanTransaction loanTransaction=setLoanTransaction(id, request);
+        loanTransaction.setApprovalStatus(ApprovalStatus.REJECTED);
+        return loanTransactionRepository.saveAndFlush(loanTransaction);
+    }
+
+    private LoanTransaction setLoanTransaction(String id, ApproveTransactionRequest request) {
+        LoanTransaction loanTransaction = findByIdOrThrowError(request.getLoanTransactionId());
+        if(loanTransaction.getApprovalStatus() != ApprovalStatus.PENDING){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"this transaction already approved or rejected by admin");
+        }
+        AppUser appUser= userService.loadUserByUserId(id);
+        loanTransaction.setApprovedBy(appUser.getEmail());
+        loanTransaction.setApprovedAt(System.currentTimeMillis());
+        loanTransaction.setUpdatedAt(System.currentTimeMillis());
+        return  loanTransaction;
     }
 
     @Override
