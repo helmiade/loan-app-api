@@ -7,6 +7,7 @@ import com.enigmacamp.livecode_loan_app.dto.Response.CommonResponse;
 import com.enigmacamp.livecode_loan_app.dto.Response.CustomerResponse;
 import com.enigmacamp.livecode_loan_app.entity.Customer;
 import com.enigmacamp.livecode_loan_app.entity.CustomerPicture;
+import com.enigmacamp.livecode_loan_app.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
+
 public class CustomerController {
     private final CustomerService customerService;
     private final CustomerPictureService customerPictureService;
@@ -50,6 +52,17 @@ public class CustomerController {
         customerService.deleteById(id);
     }
 
+    @GetMapping("/user/{user}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @CrossOrigin(origins = "http://localhost:5173")
+    public CommonResponse<Object> findByUser(@PathVariable User user) {
+        CustomerResponse customer = customerService.findByUser(user);
+        return CommonResponse.builder()
+                .message("success find customer")
+                .data(customer)
+                .build();
+    }
+
     @DeleteMapping("/{id}/image")
     @PreAuthorize("hasRole('CUSTOMER')")
     public void deleteImage(@PathVariable String id) {
@@ -58,6 +71,15 @@ public class CustomerController {
         customer.setCustomerPicture(null);
         customerService.create(customer);
         customerPictureService.deleteFile("src/main/resources/asset/images/"+customerPicture.getFile_name(),customerPicture);
+    }
+
+    @GetMapping("/picture/{id}")
+    public CommonResponse<Object> findPicture(@PathVariable String id) {
+        String path= customerService.findCustomerPictureById(id);
+        return CommonResponse.builder()
+                .message("success find picture")
+                .data(path)
+                .build();
     }
 
 }

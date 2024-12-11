@@ -2,6 +2,7 @@ package com.enigmacamp.livecode_loan_app.Service;
 
 import com.enigmacamp.livecode_loan_app.dto.Request.ApproveTransactionRequest;
 import com.enigmacamp.livecode_loan_app.dto.Request.LoanTransactionRequest;
+import com.enigmacamp.livecode_loan_app.dto.Response.DashboardResponse;
 import com.enigmacamp.livecode_loan_app.entity.LoanTransaction;
 
 import java.util.List;
@@ -14,5 +15,7 @@ public interface LoanTransactionService {
     LoanTransaction approveLoanTransaction(String id, ApproveTransactionRequest request);
     LoanTransaction rejectLoanTransaction(String id, ApproveTransactionRequest request);
     LoanTransaction updateTransactionDetail(String id);
+    List<LoanTransaction> findByCustomerId(String customerId);
+    DashboardResponse getDashboard();
 
 }

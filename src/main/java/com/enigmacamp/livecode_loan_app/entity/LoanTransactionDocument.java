@@ -25,7 +25,11 @@ public class LoanTransactionDocument {
     @Column
     private String path;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @OneToOne
+    @JoinColumn(name="transaction_id")
+    private LoanTransaction loanTransaction;
 }

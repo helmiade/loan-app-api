@@ -35,6 +35,7 @@ public class JwtUtil {
 
             return JWT.create()
                     .withSubject(appUser.getUsername())
+                    .withJWTId(appUser.getId())
                     .withIssuer(appName)
                     .withExpiresAt(Instant.now().plusSeconds(jwtExpirationInSec))
                     .withIssuedAt(Instant.now())

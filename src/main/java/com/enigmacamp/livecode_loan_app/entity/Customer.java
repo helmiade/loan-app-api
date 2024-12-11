@@ -38,7 +38,7 @@ public class Customer {
     @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
     private User user;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "customer_picture_id")
     private CustomerPicture customerPicture;
 

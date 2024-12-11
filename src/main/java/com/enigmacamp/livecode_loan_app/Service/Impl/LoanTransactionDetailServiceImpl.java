@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,24 +33,24 @@ public class LoanTransactionDetailServiceImpl implements LoanTransactionDetailSe
     public List<LoanTransactionDetail> create(LoanTransaction loanTransaction,ApproveTransactionRequest request) {
         EInstalmentType instalmentType = loanTransaction.getInstalmentType().getInstalmentType();
         List<LoanTransactionDetail> loanTransactionDetails = new ArrayList<>();
-        LoanTransactionDocument loanTransactionDocument= loanTransactionDocumentService.findByCustomer(loanTransaction.getCustomer().getId());
+        LoanTransactionDocument loanTransactionDocument= loanTransactionDocumentService.findByTransaction(loanTransaction.getId());
         GuaranteePicture guaranteePicture=guaranteePictureService.createFile(loanTransactionDocument);
-        int numberOfMonths = 0;
+        double numberOfMonths = 0;
         switch (instalmentType) {
             case ONE_MONTH:
-                numberOfMonths = 1;
+                numberOfMonths = 1.0;
                 break;
             case THREE_MONTHS:
-                numberOfMonths = 3;
+                numberOfMonths = 3.0;
                 break;
             case SIXTH_MONTHS:
-                numberOfMonths = 6;
+                numberOfMonths = 6.0;
                 break;
             case NINE_MONTHS:
-                numberOfMonths = 9;
+                numberOfMonths = 9.0;
                 break;
             case TWELVE_MONTHS:
-                numberOfMonths = 12;
+                numberOfMonths = 12.0;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid instalment type: " + instalmentType);
@@ -58,7 +59,7 @@ public class LoanTransactionDetailServiceImpl implements LoanTransactionDetailSe
         for (int i = 1; i <= numberOfMonths; i++) {
             LoanTransactionDetail loanTransactionDetail = LoanTransactionDetail.builder()
                     .loanTransaction(loanTransaction)
-                    .nominal(request.getInterestRate()/numberOfMonths)
+                    .nominal(request.getInterestRate() / numberOfMonths)
                     .loanStatus(LoanStatus.UNPAID)
                     .createdAt(System.currentTimeMillis())
                     .guaranteePicture(guaranteePicture)
@@ -82,5 +83,16 @@ public class LoanTransactionDetailServiceImpl implements LoanTransactionDetailSe
         loanTransactionDetailToUpdate.setTransactionDate(System.currentTimeMillis());
         loanTransactionDetailToUpdate.setUpdatedAt(System.currentTimeMillis());
         loanTransactionDetailRepository.saveAndFlush(loanTransactionDetailToUpdate);
+    }
+
+    @Override
+    public void payById(String id) {
+        Optional<LoanTransactionDetail> loanTransactionDetail=loanTransactionDetailRepository.findById(id);
+        if (loanTransactionDetail.isPresent()) {
+            LoanTransactionDetail loanTransactionDetailToUpdate = loanTransactionDetail.get();
+            loanTransactionDetailToUpdate.setLoanStatus(LoanStatus.PAID);
+            loanTransactionDetailToUpdate.setUpdatedAt(System.currentTimeMillis());
+            loanTransactionDetailRepository.saveAndFlush(loanTransactionDetailToUpdate);
+        }
     }
 }

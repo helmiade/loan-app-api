@@ -5,6 +5,7 @@ import com.enigmacamp.livecode_loan_app.Service.LoanTransactionService;
 import com.enigmacamp.livecode_loan_app.dto.Request.ApproveTransactionRequest;
 import com.enigmacamp.livecode_loan_app.dto.Request.LoanTransactionRequest;
 import com.enigmacamp.livecode_loan_app.dto.Response.CommonResponse;
+import com.enigmacamp.livecode_loan_app.dto.Response.DashboardResponse;
 import com.enigmacamp.livecode_loan_app.dto.Response.LoanTransactionResponse;
 import com.enigmacamp.livecode_loan_app.entity.LoanTransaction;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +80,24 @@ public class TransactionController {
         LoanTransactionResponse response= LoanTransactionMapper.mapToLoanTransactionResponse(transaction);
         return CommonResponse.builder()
                 .message("success pay transaction")
+                .data(response)
+                .build();
+    }
+    @GetMapping("/customer/{id}")
+    public CommonResponse<?> findCustomer(@PathVariable String id) {
+        List<LoanTransaction> transaction = loanTransactionService.findByCustomerId(id);
+        return CommonResponse.builder()
+                .message("success find customer transaction")
+                .data(transaction)
+                .build();
+
+    }
+    @GetMapping("/dashboard")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CommonResponse<?> findDashboard() {
+        DashboardResponse response= loanTransactionService.getDashboard();
+        return CommonResponse.builder()
+                .message("success find dashboard")
                 .data(response)
                 .build();
     }

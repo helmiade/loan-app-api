@@ -11,4 +11,6 @@ public interface CustomerPictureService {
     CustomerPicture createFile(CustomerRequest customerRequest);
     Resource findByPath(String path);
     void deleteFile(String path, CustomerPicture customerPicture);
+    String getPathById(CustomerPicture customerId);
+
 }

@@ -3,6 +3,7 @@ package com.enigmacamp.livecode_loan_app.Service.Impl;
 import com.enigmacamp.livecode_loan_app.Repository.LoanTransactionDocumentRepository;
 import com.enigmacamp.livecode_loan_app.Service.LoanTransactionDocumentService;
 import com.enigmacamp.livecode_loan_app.dto.Request.LoanTransactionRequest;
+import com.enigmacamp.livecode_loan_app.entity.LoanTransaction;
 import com.enigmacamp.livecode_loan_app.entity.LoanTransactionDocument;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,12 +27,12 @@ public class LoanTransactionDocumentServiceImpl implements LoanTransactionDocume
     private final Path directoryPath= Paths.get("src/main/resources/asset/document");
 
     @Override
-    public void createFile(LoanTransactionRequest loanTransactionRequest) {
+    public void createFile(LoanTransactionRequest loanTransactionRequest, LoanTransaction id) {
 
         if(loanTransactionRequest.getDocument().isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "file not found");
         try {
             Files.createDirectories(directoryPath);
-            String fileName = String.format("%d %s", System.currentTimeMillis(), loanTransactionRequest.getCustomers().getId());
+            String fileName = String.format("%d %s", System.currentTimeMillis(), "document "+loanTransactionRequest.getCustomers().getId());
             Path filePath=directoryPath.resolve(fileName);
             Files.copy(loanTransactionRequest.getDocument().getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             LoanTransactionDocument document = LoanTransactionDocument.builder()
@@ -40,6 +41,7 @@ public class LoanTransactionDocumentServiceImpl implements LoanTransactionDocume
                     .size(loanTransactionRequest.getDocument().getSize())
                     .path("src/main/resources/asset/images/"+fileName)
                     .customer(loanTransactionRequest.getCustomers())
+                    .loanTransaction(id)
                     .build();
 
             loanTransactionDocumentRepository.saveAndFlush(document);
@@ -51,8 +53,10 @@ public class LoanTransactionDocumentServiceImpl implements LoanTransactionDocume
     }
 
     @Override
-    public LoanTransactionDocument findByCustomer(String customerId) {
-        return loanTransactionDocumentRepository.getLoanTransactionDocumentByCustomerId(customerId);
+    public LoanTransactionDocument findByTransaction(String transactionId) {
+        LoanTransactionDocument loanTransactionDocument=loanTransactionDocumentRepository.getLoanTransactionDocumentByLoanTransactionId(transactionId);
+        if(loanTransactionDocument==null) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        return loanTransactionDocument;
     }
 
     @Override
